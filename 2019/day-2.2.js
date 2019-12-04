@@ -1,0 +1,93 @@
+const INTCODE = [
+  1,0,0,3,
+  1,1,2,3,
+  1,3,4,3,
+  1,5,0,3,
+  2,10,1,19,
+  1,6,19,23,
+  1,23,13,27,
+  2,6,27,31,
+  1,5,31,35,
+  2,10,35,39,
+  1,6,39,43,
+  1,13,43,47,
+  2,47,6,51,
+  1,51,5,55,
+  1,55,6,59,
+  2,59,10,63,
+  1,63,6,67,
+  2,67,10,71,
+  1,71,9,75,
+  2,75,10,79,
+  1,79,5,83,
+  2,10,83,87,
+  1,87,6,91,
+  2,9,91,95,
+  1,95,5,99,
+  1,5,99,103,
+  1,103,10,107,
+  1,9,107,111,
+  1,6,111,115,
+  1,115,5,119,
+  1,10,119,123,
+  2,6,123,127,
+  2,127,6,131,
+  1,131,2,135,
+  1,10,135,0,
+  99,
+  2,0,14,0];
+
+const add       = (int1, int2) => int1 + int2;
+const multiply  = (int1, int2) => int1 * int2;
+
+const OPERATORS = {
+  1: add,
+  2: multiply
+}
+
+let noun = 0;
+let verb = 0;
+
+const restore = (revert, newArr) => {
+  Object.keys(revert)
+    .forEach(pos => {
+      newArr[pos] = revert[pos]
+    })
+}
+
+const OUTPUT = 19690720;
+
+const gravityAssist = (arr, pointer = 0) => {
+  const newCoords = arr.slice(pointer, pointer + 4);
+  const opCode    = newCoords[0];
+
+  if (opCode === 99) return arr[0];
+
+  const param1      = arr[newCoords[1]];
+  const param2      = arr[newCoords[2]];
+  const func        = OPERATORS[opCode];
+  const posToUpdate = newCoords[3];
+
+  arr[posToUpdate] = func.call(null, param1, param2);
+  return gravityAssist(arr, pointer + 4);
+}
+
+for (let noun = 0; noun < 100; noun++) {
+  for (let verb = 0; verb < 100; verb++) {
+    const newArr = INTCODE.slice(0);
+    const revert = {
+      1: noun,
+      2: verb
+    };
+    Object.keys(revert)
+      .forEach(pos => {
+        newArr[pos] = revert[pos]
+      })
+    const result = gravityAssist(newArr);
+    if (result === OUTPUT) console.log([noun, verb])
+  }
+}
+
+// gravityAssist();
+// console.log(gravityAssist());
+
