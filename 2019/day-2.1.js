@@ -64,7 +64,7 @@ const gravityAssist = (pointer = 0) => {
 
     const param1      = INTCODE[newCoords[1]];
     const param2      = INTCODE[newCoords[2]];
-    const func        = OPERATORS[opCode];
+    const func        = OPCODES[opCode];
     const posToUpdate = newCoords[3];
 
     INTCODE[posToUpdate] = func.call(null, param1, param2);

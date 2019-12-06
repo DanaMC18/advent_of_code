@@ -11,8 +11,8 @@ const numberIncreases = num => {
 }
 
 const mapDigits = num => {
-  const digits = num.toString().split('').map(d => parseInt(d));
-  const digitMap = {};
+  const digits    = num.toString().split('').map(d => parseInt(d));
+  const digitMap  = {};
 
   digits.forEach(d => digitMap[d] ? digitMap[d] += 1 : digitMap[d] = 1);
 
