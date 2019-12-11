@@ -21,7 +21,7 @@ const createGraph = () => {
   return g;
 }
 
-const getAllNodes = (gMap, parentNode, counter=0) => {
+const countAllNodes = (gMap, parentNode, counter=0) => {
   let children  = gMap[parentNode];
   let total     = 0;
 
@@ -31,19 +31,19 @@ const getAllNodes = (gMap, parentNode, counter=0) => {
   total   += (children.length * counter);
   
   for (let child of children) {
-    total += getAllNodes(gMap, child, counter);
+    total += countAllNodes(gMap, child, counter);
   }
   return total;
 }
 
-const traverseGraph = graph => {
+const totalOrbits = graph => {
   const { vertMap } = graph;
   let totalOrbits   = [];
-  totalOrbits.push(getAllNodes(vertMap, 'COM'));
+  totalOrbits.push(countAllNodes(vertMap, 'COM'));
   return totalOrbits;
 }
 
 const graph = createGraph();
-const result = traverseGraph(graph);
+const result = totalOrbits(graph);
 console.log(result);
 
