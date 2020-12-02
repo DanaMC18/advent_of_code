@@ -1,0 +1,5 @@
+[flake8]
+application-import-names = advent_of_code
+import-order-style = google
+ignore = D413,W503,D400
+max-line-length = 88
