@@ -10,7 +10,7 @@ SEAT_ROWS = list(range(128))
 
 
 def get_seats():
-    """Determine seat using binary space partitioning."""
+    """Decode each seat in list of boarding pass codes."""
     seats = []
     boarding_passes = _load_passes()
 
@@ -24,6 +24,22 @@ def get_seats():
         seats.append(seat)
 
     return seats
+
+
+def find_missing_seat():
+    """Find seat missing from list of seat_ids."""
+    seats = get_seats()
+    sorted_seats = _sorted_seat_ids(seats)
+
+    missing = []
+    for i in range(len(sorted_seats)):
+        seat = sorted_seats[i]
+        if (i + 1) == len(sorted_seats):
+            continue
+        if not sorted_seats[i + 1] == seat + 1:
+            missing.append(seat + 1)
+
+    return missing
 
 
 def highest_seat_id():
@@ -68,5 +84,15 @@ def _seat_id(col: int, row: int):
     return row * 8 + col
 
 
+def _sorted_seat_ids(seats: list):
+    """Get sorted list of seat_ids."""
+    seat_ids = [_seat_id(**seat) for seat in seats]
+    return sorted(seat_ids)
+
+
+# SOLUTION 1
 # print(get_seats())
 # print(highest_seat_id())
+
+# SOLUTION 2
+# print(find_missing_seat())
