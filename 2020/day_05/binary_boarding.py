@@ -90,8 +90,9 @@ def _sorted_seat_ids(seats: list):
     return sorted(seat_ids)
 
 
-# SOLUTION 1
 # print(get_seats())
+
+# SOLUTION 1
 # print(highest_seat_id())
 
 # SOLUTION 2
