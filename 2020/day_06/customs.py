@@ -7,12 +7,40 @@ from functools import reduce
 YES_TXT = 'answers.txt'
 
 
-def yes_count():
+def all_yes_count():
+    """Get number of questions to which everyone in a group answered yes."""
+    answer_list = _load_answers()
+    group_answers = [answer.split('\n') for answer in answer_list]
+    yes_counts = []
+
+    for group in group_answers:
+        if len(group) == 1:
+            yes_counts.append(len(set(group[0])))
+            continue
+        yes_map = _group_yes_map(group)
+        common_answers = [ans for ans in yes_map if yes_map[ans] == len(group)]
+        yes_counts.append(len(common_answers))
+
+    return reduce((lambda x, y: x + y), yes_counts)
+
+
+def unique_yes_count():
     """Get number of unique questions that have been answered "yes"."""
     answer_list = _load_answers()
     group_answers = [answer.replace('\n', '') for answer in answer_list]
     yes_counts = [len(set(group)) for group in group_answers]
     return reduce((lambda x, y: x + y), yes_counts)
+
+
+def _group_yes_map(group: list):
+    """Create dict where key is a question and value is the number of "yes" answers."""
+    yes_map = {}
+    for indiv in group:
+        for char in indiv:
+            if not yes_map.get(char):
+                yes_map[char] = 0
+            yes_map[char] += 1
+    return yes_map
 
 
 def _load_answers():
@@ -25,4 +53,7 @@ def _load_answers():
 
 
 # SOLUTION 1
-# print(yes_count())
+# print(unique_yes_count())
+
+# SOLUTION 2
+# print(all_yes_count())
