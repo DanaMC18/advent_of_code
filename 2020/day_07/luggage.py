@@ -2,31 +2,46 @@
 
 import os
 
-
-CONTAIN = ' contain'
+CONTAIN = ' contain '
+NO_OTHER_BAGS = 'no other'
 RULES_TXT = 'rules.txt'
-SHINY_GOLD = 'shiny gold bag'
+SHINY_GOLD = 'shiny gold'
 
 
 def get_bag_colors():
     """Get all bag colors that can eventually contain a shiny gold bag."""
     all_bag_rules = _load_rules()
-    gold_containers = _filter_rules_by_color(all_bag_rules, SHINY_GOLD)
+    color_bag_map = _color_bag_map(all_bag_rules)
 
-    outer_bag_colors = gold_containers.copy()
+    result_bags = []
+    for bag in color_bag_map.keys():
+        bags = _outer_bags(color_bag_map, bag.strip())
+        result_bags = result_bags + bags
 
-    for color in gold_containers:
-        color_rules = _filter_rules_by_color(all_bag_rules, color)
-        outer_bag_colors += color_rules
-
-    return set(outer_bag_colors)
+    return set(result_bags)
 
 
-def _filter_rules_by_color(all_rules: list, color: str):
-    """Get all bags that can directly contain a specified color bag."""
-    gold_rules = [rule for rule in all_rules if color in rule]
-    outer_bag_rules = [rule.split(CONTAIN)[0] for rule in gold_rules]
-    return [rule for rule in outer_bag_rules if color not in rule]
+def _color_bag_map(all_rules: list):
+    """Create map of bags."""
+    bags = {}
+    for rule in all_rules:
+        clean_rule = _clean_rule_text(rule)
+        key, values = [color.strip() for color in clean_rule.split(CONTAIN)]
+
+        if NO_OTHER_BAGS in values:
+            bags[key] = {}
+            continue
+
+        split_vals = [val.strip() for val in values.split(', ')]
+        val_matrix = [val.split(' ', 1) for val in split_vals]
+        bags[key] = {color_num[1]: int(color_num[0]) for color_num in val_matrix}
+
+    return bags
+
+
+def _clean_rule_text(rule: str):
+    """Remove "bag", "bags", and "." from rule string."""
+    return rule.replace('bags', '').replace('bag', '').replace('.', '')
 
 
 def _load_rules():
@@ -38,10 +53,18 @@ def _load_rules():
     return rules.strip().split('\n')
 
 
+def _outer_bags(color_bag_map: dict, color: str):
+    """Get all bags that can contain the specified color."""
+    outer_bags = list()
+    for key in color_bag_map[color].keys():
+        if key.strip() == SHINY_GOLD:
+            outer_bags.append(color)
+        _outer_bags(color_bag_map, key.strip())
+
+    return outer_bags
+
+
 # SOLUTION 1
 # print(get_bag_colors())
 # print(len(get_bag_colors()))
 # 29
-
-# MIGHT HAVE TO DO THIS RECURSIVELY TO GET DEEPLY NESTED BAGS?
-# put lines 18 - 22 in it's own recursive method? break point = count stays the same?
