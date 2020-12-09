@@ -8,19 +8,6 @@ RULES_TXT = 'rules.txt'
 SHINY_GOLD = 'shiny gold'
 
 
-def get_bag_colors():
-    """Get all bag colors that can eventually contain a shiny gold bag."""
-    all_bag_rules = _load_rules()
-    color_bag_map = _color_bag_map(all_bag_rules)
-
-    result_bags = []
-    for bag in color_bag_map.keys():
-        bags = _outer_bags(color_bag_map, bag.strip())
-        result_bags = result_bags + bags
-
-    return set(result_bags)
-
-
 def _color_bag_map(all_rules: list):
     """Create map of bags."""
     bags = {}
@@ -53,18 +40,23 @@ def _load_rules():
     return rules.strip().split('\n')
 
 
-def _outer_bags(color_bag_map: dict, color: str):
-    """Get all bags that can contain the specified color."""
-    outer_bags = list()
-    for key in color_bag_map[color].keys():
-        if key.strip() == SHINY_GOLD:
-            outer_bags.append(color)
-        _outer_bags(color_bag_map, key.strip())
-
-    return outer_bags
+all_rules = _load_rules()
+bag = None
+color_map = _color_bag_map(all_rules)
+result = set()
 
 
 # SOLUTION 1
-# print(get_bag_colors())
-# print(len(get_bag_colors()))
-# 29
+def _gather_bags(color_map_key, bag=None):
+    """Bags in bags in bags."""
+    for k in color_map[color_map_key].keys():
+        if k == SHINY_GOLD:
+            result.add(bag)
+            break
+        _gather_bags(k, bag)
+
+
+def get_outer_bags():
+    for bag in color_map.keys():
+        _gather_bags(bag, bag)
+    return result
