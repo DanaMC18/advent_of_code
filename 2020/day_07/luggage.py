@@ -46,17 +46,38 @@ color_map = _color_bag_map(all_rules)
 result = set()
 
 
-# SOLUTION 1
-def _gather_bags(color_map_key, bag=None):
+# SOLUTION 01 | 177
+def _bag_ception(color_map_key, bag=None):
     """Bags in bags in bags."""
     for k in color_map[color_map_key].keys():
         if k == SHINY_GOLD:
             result.add(bag)
             break
-        _gather_bags(k, bag)
+        _bag_ception(k, bag)
 
 
 def get_outer_bags():
     for bag in color_map.keys():
-        _gather_bags(bag, bag)
+        _bag_ception(bag, bag)
     return result
+
+# print(len(get_outer_bags()))
+
+
+# SOLUTION 02 | 34988
+bag_sums = list()
+
+
+def get_bag_count(color_map_key=SHINY_GOLD):
+    """Get number of bags inside a shiny gold bag."""
+    children = color_map[color_map_key]
+    bag_sums.append(sum(children.values()))
+
+    for child in children.keys():
+        for i in range(children[child]):
+            get_bag_count(child)
+
+    return sum(bag_sums)
+
+
+# print(get_bag_count(SHINY_GOLD))
