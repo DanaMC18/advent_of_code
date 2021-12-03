@@ -1,4 +1,4 @@
-"""Main solution file: day 1."""
+"""Main solution file: Day 1."""
 
 import os
 from typing import List
