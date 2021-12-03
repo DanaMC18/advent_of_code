@@ -1,7 +1,7 @@
 """Main solution file: Day 2."""
 
 import os
-from typing import List, Tuple
+from typing import List
 
 INPUT_FILE = 'input.txt'
 DEPTH_CALC = {
@@ -13,14 +13,7 @@ DEPTH_CALC = {
 def part_1() -> int:
     """Find planned sub destination."""
     instructions = _load_input()
-    hor, depth = _find_destination(instructions)
-    return hor * depth
-
-
-def _find_destination(instructions: List[str]) -> Tuple[int, int]:
-    """Find destination based on instructions."""
-    hor = 0
-    depth = 0
+    depth = hor = 0
 
     for step in instructions:
         command, val = step.split(' ')
@@ -31,7 +24,25 @@ def _find_destination(instructions: List[str]) -> Tuple[int, int]:
         else:
             hor += val
 
-    return hor, depth
+    return depth * hor
+
+
+def part_2() -> int:
+    """Find planned sub destination but better."""
+    instructions = _load_input()
+    aim = depth = hor = 0
+
+    for step in instructions:
+        command, val = step.split(' ')
+        val = int(val)
+
+        if command in DEPTH_CALC:
+            aim += (val * DEPTH_CALC[command])
+        else:
+            hor += val
+            depth += (aim * val)
+
+    return depth * hor
 
 
 def _load_input() -> List[str]:
@@ -43,4 +54,5 @@ def _load_input() -> List[str]:
     return data.strip().split('\n')
 
 
-print(part_1())  # 1728414
+# print(part_1())   # 1728414
+# print(part_2())   # 1765720035
