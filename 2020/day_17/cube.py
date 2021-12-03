@@ -27,26 +27,28 @@ def part_one():
     y = 3
     z = 1
     dimensions = {0: INITIAL_STATE}
-    new_dimensions = dict()
+    new_dimensions = {i: INITIAL_STATE for i in range(z)}
 
-    combos = list(product(range(x), range(y)))
-    neighbor_matrix = list()
+    combos = list(product(range(x), range(y), range(z)))
 
     for combo in combos:
         x_coord = combo[0]
         y_coord = combo[1]
-        neighbor_matrix.append(_neighbor_coords([x_coord, y_coord, z]))
+        z_coord = combo[2]
+        neighbor_coords = _neighbor_coords([x_coord, y_coord, z_coord])
 
-    for c in combos:
-        x_coord = combo[0]
-        y_coord = combo[1]
-        neighbor_coords = neighbor_matrix[x_coord][y_coord]
+        current_val = dimensions.get(z_coord)[x_coord][y_coord]
+        neighbor_vals = _neighbor_vals(neighbor_coords, dimensions)
+        new_val = _get_new_val(current_val, neighbor_vals)
+
+        new_dimensions[z_coord][x_coord][y_coord] = new_val
+
+    return new_dimensions
 
 
-def _get_new_val(current_val: str, dimension: list, neighbor_coords: list):
+def _get_new_val(current_val: list, neighbor_vals: list):
     """Determine new value based on neighbors."""
-    values = _neighbor_vals(neighbor_coords, dimension)
-    actives = [v for v in values if v == ACTIVE]
+    actives = [nv for nv in neighbor_vals if nv == ACTIVE]
 
     if current_val == ACTIVE:
         return ACTIVE if len(actives) in [2, 3] else INACTIVE
@@ -61,18 +63,29 @@ def _neighbor_coords(coord: list):
     y = coord[1]
     z = coord[2]
 
-    x_coords = [x + 1] + [x - 1]
-    y_coords = [y + 1] + [y - 1]
-    z_coords = [z + 1] + [z - 1]
+    x_coords = [x] + [x + 1] + [x - 1]
+    y_coords = [y] + [y + 1] + [y - 1]
+    z_coords = [z] + [z + 1] + [z - 1]
 
-    return list(product(x_coords, y_coords, z_coords))
+    combined = list(product(x_coords, y_coords, z_coords))
+
+    return [c for c in combined if not set(c) == set(coord)]
 
 
-def _neighbor_vals(coords: list, dimension: list):
+def _neighbor_vals(coords: list, dimensions: dict):
     """Get values from coordinates."""
     values = list()
+
     for coord in coords:
         x = coord[0]
         y = coord[1]
-        values.append(dimension[x][y])
+        z = coord[2]
+
+        dim = dimensions.get(z)
+
+        if dim and x < len(dim) and y < len(dim):
+            values.append(dim[x][y])
+        else:
+            values.append(INACTIVE)
+
     return values
