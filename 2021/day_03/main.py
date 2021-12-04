@@ -3,6 +3,8 @@
 import os
 from typing import List, Tuple
 
+EPSILON = 'epsilon'
+GAMMA = 'gamma'
 INPUT_FILE = 'input.txt'
 
 
@@ -20,8 +22,8 @@ def part_1() -> int:
 def part_2() -> int:
     """Determine the 'life support rating'."""
     input = _load_input()
-    co2_scrubber_rating = _life_support_rate_binary(input, 0, 'epsilon')
-    oxygen_gen_rating = _life_support_rate_binary(input, 0, 'gamma')
+    co2_scrubber_rating = _life_support_rate_binary(input, 0, EPSILON)
+    oxygen_gen_rating = _life_support_rate_binary(input, 0, GAMMA)
 
     co2_decimal = int(co2_scrubber_rating, 2)
     oxygen_decimal = int(oxygen_gen_rating, 2)
@@ -35,18 +37,18 @@ def _life_support_rate_binary(input: List[str], index: int, rate_type: str) -> s
     Returns a binary num.
 
     Args:
-      input (list): list of binary numbers
-      index (int): position at which to check a bit value of binary number
-      rate_type (str): either 'epsilon' or 'gamma'
-        - if 'epsilon', get 'CO2 scrubber rating'
-        - if 'gamma', get 'oxygen generator rating'
+        input (list): list of binary numbers
+        index (int): position at which to check a bit value of binary number
+        rate_type (str): either 'epsilon' or 'gamma'
+            - if 'epsilon', get 'CO2 scrubber rating'
+            - if 'gamma', get 'oxygen generator rating'
     """
     if len(input) == 1:
         return input[0]
 
     epsilon, gamma = _get_epsilon_gamma_rates(input)
 
-    bit = gamma[index] if rate_type == 'gamma' else epsilon[index]
+    bit = gamma[index] if rate_type == GAMMA else epsilon[index]
 
     new_input = [num for num in input if num[index] == bit]
     index += 1
@@ -80,6 +82,7 @@ def _load_input() -> List[str]:
     filepath = os.path.join(os.getcwd(), os.path.dirname(__file__), INPUT_FILE)
     f = open(filepath, 'r')
     data = f.read()
+    f.close()
     return data.strip().split('\n')
 
 
