@@ -6,7 +6,7 @@ from typing import List
 INPUT_FILE = 'input.txt'
 
 
-def part_1() -> int:
+def main() -> int:
     """Find number of overlapping points (points greater than 1)."""
     input = _load_input()
     vent_map = _blank_vent_map(input)
@@ -54,25 +54,50 @@ def _plot_points(blank_map: List[List[int]], input: List[List[int]]):
         input (matrix): coordinates of all line termini
     """
     for coords in input:
-        if coords[0][1] == coords[1][1]:
-            constant = coords[0][1]
-            size = coords[1][0] - coords[0][0]
-            dir = 'W' if size < 0 else 'E'
-        elif coords[0][0] == coords[1][0]:
-            constant = coords[0][0]
-            size = coords[1][1] - coords[0][1]
-            dir = 'N' if size < 0 else 'S'
-        else:
-            continue  # skip diagonals
+        combo = coords[0] + coords[1]
+        constant = max(set(combo), key=combo.count)
+        termini = [c for c in combo if c != constant]
 
-        if dir == 'N':
-            line = [[_, constant] for _ in range(coords[1][1], coords[0][1] + 1)]
-        elif dir == 'E':
-            line = [[constant, _] for _ in range(coords[0][0], coords[1][0] + 1)]
-        elif dir == 'S':
-            line = [[_, constant] for _ in range(coords[0][1], coords[1][1] + 1)]
-        elif dir == 'W':
-            line = [[constant, _] for _ in range(coords[1][0], coords[0][0] + 1)]
+        #  check if termini was removed because it was same num as constant
+        if len(termini) == 1:
+            termini.append(constant)
+
+        if coords[0][1] == coords[1][1]:
+            dir = 'horizontal'
+        elif coords[0][0] == coords[1][0]:
+            dir = 'vertical'
+        else:
+            # continue  # PART 1: skip diagonals
+            dir = 'diag'
+
+        if dir == 'horizontal':
+            start = min(termini)
+            end = max(termini)
+            line = [[constant, _] for _ in range(start, end + 1)]
+        elif dir == 'vertical':
+            start = min(termini)
+            end = max(termini)
+            line = [[_, constant] for _ in range(start, end + 1)]
+        else:
+            # PART 2: handle diagonals
+            col_termini = [coords[0][0], coords[1][0]]
+            row_termini = [coords[0][1], coords[1][1]]
+            col_start = min(col_termini)
+            col_end = max(col_termini)
+            row_start = min(row_termini)
+            row_end = max(row_termini)
+
+            cols = list(range(col_start, col_end + 1))
+            rows = list(range(row_start, row_end + 1))
+
+            if col_termini[0] > col_termini[1]:
+                cols.reverse()
+            if row_termini[0] > row_termini[1]:
+                rows.reverse()
+
+            line = list()
+            for index in range(len(cols)):
+                line.append([rows[index], cols[index]])
 
         for point in line:
             blank_map[point[0]][point[1]] += 1
@@ -102,4 +127,7 @@ def _load_input() -> List[List[int]]:
     return new_input
 
 
-# print(part_1())   # 5774
+# print(main())
+
+# part_1 = 5774
+# part_2 = 18423
