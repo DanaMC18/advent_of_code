@@ -42,7 +42,7 @@ def _blank_vent_map(input: List[List[int]]) -> List[List[int]]:
 
 
 def _plot_points(blank_map: List[List[int]], input: List[List[int]]):
-    """Create lines from coords and plot them on map.
+    """Create lines from coords and plot them on map. Returns populated map as matrix.
 
     For each set of coords in input:
         1. Use coords to determine direction of line.
@@ -81,9 +81,10 @@ def _plot_points(blank_map: List[List[int]], input: List[List[int]]):
         else:
             # PART 2: handle diagonals
             col_termini = [coords[0][0], coords[1][0]]
-            row_termini = [coords[0][1], coords[1][1]]
             col_start = min(col_termini)
             col_end = max(col_termini)
+
+            row_termini = [coords[0][1], coords[1][1]]
             row_start = min(row_termini)
             row_end = max(row_termini)
 
@@ -92,6 +93,7 @@ def _plot_points(blank_map: List[List[int]], input: List[List[int]]):
 
             if col_termini[0] > col_termini[1]:
                 cols.reverse()
+
             if row_termini[0] > row_termini[1]:
                 rows.reverse()
 
