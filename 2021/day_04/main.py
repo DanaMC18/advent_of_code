@@ -26,9 +26,9 @@ def _find_winning_values(winning_index: int = 0) -> Tuple:
     """Get winning values.
 
     Returns a tuple of:
-      1. winning board (matrix)
-      2. winning number (int)
-      3. coords of marked numbers on winning board (matrix)
+        1. winning board (matrix)
+        2. winning number (int)
+        3. coords of marked numbers on winning board (matrix)
 
     Args:
         winning_index (int): index from which to check for a winning set
