@@ -25,7 +25,8 @@ def main(days: int) -> int:
         # add number of birthday fish to number of fish born 2 days ago
         age_count[6] += birthday
 
-        # shift birthday fish to end of list
+        # number of birthday fish == number of baby fish
+        # add baby fish to end of list (index 8)
         age_count.append(birthday)
 
     # print(age_count)
