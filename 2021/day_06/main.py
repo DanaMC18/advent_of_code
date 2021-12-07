@@ -7,28 +7,21 @@ from typing import List
 INPUT_FILE = 'input.txt'
 
 
-def part_1() -> int:
-    """Determine how many fish will exist after 80 days."""
+def main(days: int) -> int:
+    """Determine how many fish will exist after N days."""
     input = _load_input()
-    day = 1
-    fish_list = input.copy()
+    age_count = [0] * 9
 
-    while day <= 80:
-        new_fish_list = list()
-        baby_fish_list = list()
+    for age in input:
+        age_count[age] += 1
 
-        for fish in fish_list:
-            if fish == 0:
-                new_fish = 6
-                baby_fish_list.append(8)
-            else:
-                new_fish = fish - 1
-            new_fish_list.append(new_fish)
+    for _ in range(days):
+        birthday = age_count.pop(0)
+        age_count[6] += birthday
+        age_count.append(birthday)
 
-        fish_list = new_fish_list + baby_fish_list
-        day += 1
-
-    return len(fish_list)
+    # print(age_count)
+    return sum(age_count)
 
 
 def _load_input() -> List[int]:
@@ -41,4 +34,5 @@ def _load_input() -> List[int]:
     return [int(d) for d in data.strip().split(',')]
 
 
-# print(part_1())   # 351188
+# print(main(80))     # part_1 = 351188
+# print(main(256))    # part_2 = 1595779846729
