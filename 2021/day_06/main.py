@@ -12,12 +12,20 @@ def main(days: int) -> int:
     input = _load_input()
     age_count = [0] * 9
 
+    # list's index is the "age"
+    # the value at an index is the num of fish at that age
     for age in input:
         age_count[age] += 1
 
     for _ in range(days):
+        # age 0 = day for fish to spawn (AKA 'birthday')
         birthday = age_count.pop(0)
+
+        # next birthday is in 7 days
+        # add number of birthday fish to number of fish born 2 days ago
         age_count[6] += birthday
+
+        # shift birthday fish to end of list
         age_count.append(birthday)
 
     # print(age_count)
