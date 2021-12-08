@@ -6,13 +6,28 @@ from typing import List
 INPUT_FILE = 'input.txt'
 
 
-def part_1():
+def part_1() -> int:
     """Align crab submarines in position using least amount of fuel."""
     input = _load_input()
     fuel_totals = list()
 
     for i in range(1, len(input) + 1):
-        fuel_totals.append(sum([abs(sub - i) for sub in input]))
+        fuel_totals.append(sum([abs(position - i) for position in input]))
+
+    return min(fuel_totals)
+
+
+def part_2() -> int:
+    """Align crab subarines in position using least amount of fuel."""
+    input = _load_input()
+    fuel_totals = list()
+
+    for i in range(1, len(input) + 1):
+        fuel = 0
+        for position in input:
+            diff = abs(position - i)
+            fuel += sum(range(diff + 1))
+        fuel_totals.append(fuel)
 
     return min(fuel_totals)
 
@@ -27,4 +42,5 @@ def _load_input() -> List[int]:
     return [int(i) for i in input]
 
 
-print(part_1())   # 336701
+# print(part_1())   # 336701
+# print(part_2())   # 95167302
