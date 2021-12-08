@@ -48,9 +48,9 @@ def _load_input() -> List[int]:
 
 # NOTES:
 # Apparently the most efficient position in part 1 is the median of the list.
-# For part 2, the most effefient position is the mean of the list.
+# For part 2, the most effecient position is the mean of the list.
 # Part 2 also makes use of triangular numbers: n * (n + 1) / 2
-# All the work done above to find the right position isn't necessary or effecient.
+# All the work done above to find the right position isn't necessary or performant.
 
 # PART 1:
 def part_1_median() -> int:
