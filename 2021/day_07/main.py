@@ -18,7 +18,7 @@ def part_1() -> int:
 
 
 def part_2() -> int:
-    """Align crab subarines in position using least amount of fuel."""
+    """Align crab submarines in position using least amount of fuel."""
     input = _load_input()
     fuel_totals = list()
 
