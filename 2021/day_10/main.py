@@ -3,7 +3,6 @@
 import os
 from typing import List
 
-BRACKETS = '(){}[]<>'
 BRACKET_PAIRS = {
     '(': ')',
     '{': '}',
@@ -11,17 +10,17 @@ BRACKET_PAIRS = {
     '<': '>'
 }
 INPUT_FILE = 'input.txt'
-POINT_MAP = {
-    ')': 3,
-    ']': 57,
-    '}': 1197,
-    '>': 25137
-}
 
 
 def part_1() -> int:
-    """Find syntax error score of input using a stack."""
+    """Find syntax error score of corrupted input lines using a stack."""
     input = _load_input()
+    point_map = {
+        ')': 3,
+        ']': 57,
+        '}': 1197,
+        '>': 25137
+    }
     score = 0
 
     for line in input:
@@ -31,15 +30,52 @@ def part_1() -> int:
             if char in BRACKET_PAIRS.keys():
                 stack.append(char)
             elif not stack:
-                score += POINT_MAP[char]
+                score += point_map[char]
                 break
             else:
                 last_char = stack.pop()
                 if BRACKET_PAIRS[last_char] != char:
-                    score += POINT_MAP[char]
+                    score += point_map[char]
                     break
 
     return score
+
+
+def part_2() -> int:
+    """Find autocomplete score after completing incorrect input lines using a stack."""
+    input = _load_input()
+    point_map = {
+        ')': 1,
+        ']': 2,
+        '}': 3,
+        '>': 4
+    }
+    scores = list()
+
+    for line in input:
+        stack = list()
+
+        for char in line:
+            if char in BRACKET_PAIRS.keys():
+                stack.append(char)
+            elif not stack:
+                break
+            else:
+                last_char = stack.pop()
+                if BRACKET_PAIRS[last_char] != char:
+                    stack = list()
+                    break
+
+        if stack:
+            score = 0
+            for bracket in reversed(stack):
+                match = BRACKET_PAIRS[bracket]
+                score = (score * 5) + point_map[match]
+            scores.append(score)
+
+    sorted_scores = sorted(scores)
+    median = sorted_scores[len(scores) // 2]
+    return median
 
 
 def _load_input() -> List[str]:
@@ -52,4 +88,5 @@ def _load_input() -> List[str]:
     return data.strip().split('\n')
 
 
-print(part_1())
+# print(part_1())   # 394647
+# print(part_2())   # 2380061249
