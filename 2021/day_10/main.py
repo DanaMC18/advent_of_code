@@ -42,7 +42,7 @@ def part_1() -> int:
 
 
 def part_2() -> int:
-    """Find autocomplete score after completing incorrect input lines using a stack."""
+    """Find autocomplete score after completing incomplete input lines using a stack."""
     input = _load_input()
     point_map = {
         ')': 1,
