@@ -38,6 +38,34 @@ def part_1() -> int:
     return total_glow_count
 
 
+def part_2() -> int:
+    """Return step at which all flashes happen at once."""
+    initial_input = _load_input()
+    rows = len(initial_input)
+    cols = len(initial_input[0])
+
+    input = initial_input.copy()
+    step_num = 0
+
+    while True:
+        flashed = list()
+        step_glow_count = 0
+
+        step_num += 1
+
+        for row in range(rows):
+            for col in range(cols):
+                coords = [[col, row]]
+                new_input, glow_count = _get_glow_counts(coords, input, flashed)
+                input = new_input
+                step_glow_count += glow_count
+
+        if step_glow_count == 100:
+            break
+
+    return step_num
+
+
 def _get_glow_counts(
     coord_stack: List[List[int]],
     input: List[List[int]],
@@ -89,3 +117,4 @@ def _load_input() -> List[List[int]]:
 
 
 # print(part_1())   # 1571
+# print(part_2())   # 387
