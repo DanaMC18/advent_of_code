@@ -14,8 +14,18 @@ def part_1() -> int:
     return path_count
 
 
-def _path_count(current_cave: str, input: Dict[str, List[str]], seen: set) -> int:
-    """Recursicely traverse cave system and return number of paths."""
+def _path_count(
+    current_cave: str,
+    input: Dict[str, List[str]],
+    seen: set
+) -> int:
+    """Recursicely traverse cave system and return number of paths.
+    
+    Args:
+        current_cave (str): the current cave
+        input (dict): a dict where k is a cave and v is a list of it's neighbors
+        seen (set): a unique list of visited caves
+    """
     if current_cave == 'end':
         return 1
 
@@ -48,4 +58,4 @@ def _load_input() -> Dict[str, List[str]]:
     return input
 
 
-print(part_1())   # 4241
+# print(part_1())   # 4241
