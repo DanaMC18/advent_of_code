@@ -6,9 +6,13 @@ from typing import Dict, List, Tuple
 INPUT_FILE = 'input.txt'
 
 
-def part_1() -> int:
-    """Return number of dots after folding graph once."""
-    input, folds = _load_input()
+def main(part: int = 1) -> List[List[str]]:
+    """Return graph paper after folding.
+
+    Args:
+        part (int): 1 or 2; if 1, fold graph only once; defaults to 1
+    """
+    input, all_folds = _load_input()
 
     rows = max([coord[1] for coord in input])
     cols = max([coord[0] for coord in input])
@@ -26,8 +30,9 @@ def part_1() -> int:
 
     folded_coords = clean_coords.copy()
     folded_graph = blank_graph.copy()
+    folds = all_folds[:1] if part == 1 else all_folds
 
-    for fold in folds[:1]:
+    for fold in folds:
         x = fold.get('x')
         y = fold.get('y')
 
@@ -43,23 +48,23 @@ def part_1() -> int:
             folded_coords = new_coords
             folded_graph = new_graph[:y]
 
-    return sum([line.count('#') for line in folded_graph])
+    return folded_graph
 
 
 def _fold_left(
     coords: List[List[int]],
     graph: List[List[str]],
     x: int
-):
+) -> Tuple[List[List[int]], List[List[str]]]:
     """Fold in half along x axis.
 
     Args:
-        coords (list): current list coordinates
+        coords (martix): current list coordinates
         graph (matrix): current iteration of graph
         x (int): the col on which to fold the graph
 
     Returns:
-        new_coords (list): new coordinates after fold
+        new_coords (matrix): new coordinates after fold
         new_graph (matrix): updated/marked graph after fold
     """
     rows = len(graph)
@@ -83,16 +88,16 @@ def _fold_up(
     coords: List[List[int]],
     graph: List[List[str]],
     y: int
-) -> List[List[str]]:
+) -> Tuple[List[List[int]], List[List[str]]]:
     """Fold in half along the y axis.
 
     Args:
-        coords (list): current list coordinates
+        coords (matrix): current list coordinates
         graph (matrix): current iteration of graph
         y (int): the row on which to fold the graph
 
     Returns:
-        new_coords (list): new coordinates after fold
+        new_coords (matrix): new coordinates after fold
         new_graph (matrix): updated/marked graph after fold
     """
     rows = len(graph)
@@ -134,4 +139,10 @@ def _load_input() -> Tuple[List[List[int]], List[Dict[str, int]]]:
     return input, fold_dicts
 
 
-# print(part_1())   # 814
+# PART 1       # 814
+# print(sum([line.count('#') for line in main()]))
+
+
+# PART 2        # PZEHRAER
+# for line in main(part=2):
+#     print(line)
