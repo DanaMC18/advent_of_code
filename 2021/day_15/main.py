@@ -21,6 +21,41 @@ def part_1() -> int:
     return risk
 
 
+def part_2() -> int:
+    """Return total of least risky path in larger cavemap."""
+    input = _load_input()
+    rows = len(input)
+    cols = len(input[0])
+
+    fifty_grid = list()
+
+    for x in range(rows * 5):
+        new_line = list()
+
+        for y in range(cols * 5):
+            new_line.append(0)
+
+        fifty_grid.append(new_line)
+
+    for row in range(rows * 5):
+        for col in range(cols * 5):
+            # "dist" btwn original grid and expanded tile
+            dist = (row // rows) + (col // cols)
+            r = row % rows      # corresponding row in original grid
+            c = col % cols      # corresponding col in original grid
+            val = input[r][c]   # val at position in original grid
+
+            for _ in range(dist):
+                val += 1
+                if val == 10:
+                    val = 1
+
+            fifty_grid[row][col] = val
+
+    risk = _find_path(fifty_grid)
+    return risk
+
+
 def _find_path(input):
     rows = len(input)
     cols = len(input[0])
@@ -62,4 +97,5 @@ def _load_input() -> List[List[int]]:
     return [[int(i) for i in line] for line in raw_input]
 
 
-print(part_1())   # 429
+# print(part_1())   # 429
+# print(part_2())   # 2844
