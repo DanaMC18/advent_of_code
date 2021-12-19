@@ -30,35 +30,54 @@ def part_1() -> int:
     """Get total version value of input."""
     input = _load_input()
     binary = ''.join([HEX_MAP[char] for char in input])
-    return _decode_binary(binary, [])
+    packets = _decode_binary(binary, [])
+    versions = [packet.get('version') for packet in packets]
+    return sum(versions)
 
 
 def _decode_binary(binary: str, packets: list) -> List[Dict[str, int]]:
-    """Decode binary string."""
-    if not binary:
+    """Decode binary to get list of packet dicts.
+
+    Args:
+        binary (str): a binary string
+        packets (list): a list of packet dicts: [{'version': num, 'value': num}]
+    """
+    if not int(binary, 2):
         return packets
 
     binary_version = binary[:3]
     binary_type = binary[3:6]
 
     if int(binary_type, 2) == LITERAL:
-        val, end_index = _decode_literal(binary)
-        zero_count = 4 - (end_index % 4)
-        end_index += zero_count
+        val, new_binary = _decode_literal(binary)
+
+        packet_dict = {'version': int(binary_version, 2), 'value': val}
+        new_packets = packets + [packet_dict]
+        return _decode_binary(new_binary, new_packets)
     else:
-        mode = binary[6]
+        mode = int(binary[6])
         mode_length = MODE_LENGTHS[mode]
+        start = 7
+        end = 7 + mode_length
+        sub_packet_count = int(binary[start:end], 2)
+        count = 1
+        new_binary = binary[end:]
 
-    new_binary = binary[end_index:]
+        while count <= sub_packet_count:
+            count += 1
+            packet_dict = {'version': int(binary_version, 2), 'value': None}
+            new_packets = packets + [packet_dict]
+            return _decode_binary(new_binary, new_packets)
 
-    packet_dict = {'version': int(binary_version, 2), 'value': val}
-    new_packets = packets + [packet_dict]
 
-    return _decode_binary(new_binary, new_packets)
+def _decode_literal(binary: str) -> Tuple[int, str]:
+    """Decode literal value from binary string.
 
+    Returns a tuple of the binary value and remaining chars of binary string.
 
-def _decode_literal(binary: str) -> Tuple[int, int]:
-    """Decode literal value from binary string."""
+    Args:
+        binary (str): a binary string
+    """
     binary_num = ''
     is_last = False
     start = 6
@@ -72,16 +91,8 @@ def _decode_literal(binary: str) -> Tuple[int, int]:
         binary_num += num
         start = end
 
-    return int(binary_num, 2), end - 1
-
-
-def _decode_operator(binary: str) -> Tuple[int, int]:
-    """Decode operator value from binary string."""
-    mode = binary[6]
-    mode_length = MODE_LENGTHS[mode]
-    start = 7
-    end = 7 + mode_length
-    sub_packet_length = int(binary[start:end], 2)
+    remaining_binary = binary[end:]
+    return int(binary_num, 2), remaining_binary
 
 
 def _load_input() -> str:
@@ -93,4 +104,4 @@ def _load_input() -> str:
     return data.strip()
 
 
-print(part_1())
+print(part_1())   # 886
