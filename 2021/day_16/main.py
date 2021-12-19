@@ -1,5 +1,6 @@
 """Main solution file: day 16."""
 
+from numpy import prod
 import os
 from typing import Dict, List, Tuple
 
@@ -30,30 +31,46 @@ def part_1() -> int:
     """Get total version value of input."""
     input = _load_input()
     binary = ''.join([HEX_MAP[char] for char in input])
-    packets = _decode_binary(binary, [])
-    versions = [packet.get('version') for packet in packets]
+    _, versions = _decode_binary(binary, [], [])
     return sum(versions)
 
 
-def _decode_binary(binary: str, packets: list) -> List[Dict[str, int]]:
-    """Decode binary to get list of packet dicts.
+def part_2() -> int:
+    """Return result of performing operation on values of subpackets."""
+    input = _load_input()
+    binary = ''.join([HEX_MAP[char] for char in input])
+    values, versions = _decode_binary(binary, [], [])
+    return values
+    # return packets
+
+
+def _decode_binary(
+    binary: str,
+    values: list,
+    versions: list,
+) -> Tuple[List[int], List[int]]:
+    """Decode binary to get list of packet values and packet versions
 
     Args:
         binary (str): a binary string
-        packets (list): a list of packet dicts: [{'version': num, 'value': num}]
+        values (list): list of subpacket values
+        versions (list): list of versions
     """
-    if not int(binary, 2):
-        return packets
+    if not binary or not int(binary, 2):
+        return values, versions
 
     binary_version = binary[:3]
     binary_type = binary[3:6]
+    version_num = int(binary_version, 2)
+    operator_id = int(binary_type, 2)
 
-    if int(binary_type, 2) == LITERAL:
+    new_versions = versions + [version_num]
+
+    if operator_id == LITERAL:
         val, new_binary = _decode_literal(binary)
 
-        packet_dict = {'version': int(binary_version, 2), 'value': val}
-        new_packets = packets + [packet_dict]
-        return _decode_binary(new_binary, new_packets)
+        new_values = values + [val]
+        return _decode_binary(new_binary, new_values, new_versions)
     else:
         mode = int(binary[6])
         mode_length = MODE_LENGTHS[mode]
@@ -65,9 +82,10 @@ def _decode_binary(binary: str, packets: list) -> List[Dict[str, int]]:
 
         while count <= sub_packet_count:
             count += 1
-            packet_dict = {'version': int(binary_version, 2), 'value': None}
-            new_packets = packets + [packet_dict]
-            return _decode_binary(new_binary, new_packets)
+            return _decode_binary(new_binary, values, new_versions)
+            # vals, _ = _decode_binary(new_binary, values, new_versions)
+            # new_values = _execute_op(operator_id, vals)
+            # return [new_values], versions
 
 
 def _decode_literal(binary: str) -> Tuple[int, str]:
@@ -95,6 +113,36 @@ def _decode_literal(binary: str) -> Tuple[int, str]:
     return int(binary_num, 2), remaining_binary
 
 
+def _execute_op(type_id: int, values: List[int]):
+    """Execute operation on list of values."""
+    if type_id == 0:
+        return sum(values)
+
+    if type_id == 1:
+        return prod(values)
+
+    if type_id == 2:
+        return min(values)
+
+    if type_id == 3:
+        return max(values)
+
+    if type_id == 4:
+        return values
+
+    if type_id == 5:
+        is_greater_than = values[0] > values[1]
+        return int(is_greater_than)
+
+    if type_id == 6:
+        is_less_than = values[0] < values[1]
+        return int(is_less_than)
+
+    if type_id == 7:
+        is_equal = values[0] == values[1]
+        return int(is_equal)
+
+
 def _load_input() -> str:
     """Load input data from text file."""
     filepath = os.path.join(os.getcwd(), os.path.dirname(__file__), INPUT_FILE)
@@ -105,3 +153,4 @@ def _load_input() -> str:
 
 
 print(part_1())   # 886
+# print(part_2())
