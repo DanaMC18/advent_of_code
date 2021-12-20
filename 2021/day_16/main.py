@@ -2,7 +2,7 @@
 
 from numpy import prod
 import os
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 HEX_MAP = {
     '0': '0000',
@@ -39,9 +39,49 @@ def part_2() -> int:
     """Return result of performing operation on values of subpackets."""
     input = _load_input()
     binary = ''.join([HEX_MAP[char] for char in input])
-    values, versions = _decode_binary(binary, [], [])
-    return values
-    # return packets
+    _, val = _parse(binary)
+    return val
+
+
+def _parse(data):
+    data = data[3:]
+
+    tid = int(data[:3], 2)
+    data = data[3:]
+    if tid == 4:
+        t = ""
+        while True:
+            t += data[1:5]
+            cnt = data[0]
+            data = data[5:]
+            if cnt == '0':
+                break
+        return (data, int(t, 2))
+    else:
+        ltid = data[0]
+        data = data[1:]
+        spv = []
+        if ltid == '0':
+            l = data[:15]
+            data = data[15:]
+            subpacketslen = int(l, 2)
+            subpackets = data[:subpacketslen]
+            while subpackets:
+                s, x = _parse(subpackets)
+                subpackets = s
+                spv.append(x)
+            data = data[subpacketslen:]
+        else:
+            l = data[:11]
+            data = data[11:]
+            subpacketsqty = int(l, 2)
+            for i in range(subpacketsqty):
+                s, x = _parse(data)
+                data = s
+                spv.append(x)
+
+        new_val = _execute_op(tid, spv)
+        return data, new_val
 
 
 def _decode_binary(
@@ -152,5 +192,5 @@ def _load_input() -> str:
     return data.strip()
 
 
-print(part_1())   # 886
-# print(part_2())
+# print(part_1())   # 886
+# print(part_2())   # 184487454837
