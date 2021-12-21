@@ -27,77 +27,27 @@ LITERAL = 4
 MODE_LENGTHS = [15, 11]
 
 
+# # # # # #
+# PART 1  #
+# # # # # #
+
 def part_1() -> int:
     """Get total version value of input."""
     input = _load_input()
     binary = ''.join([HEX_MAP[char] for char in input])
-    _, versions = _decode_binary(binary, [], [])
+    versions = _decode_binary(binary, [])
     return sum(versions)
 
 
-def part_2() -> int:
-    """Return result of performing operation on values of subpackets."""
-    input = _load_input()
-    binary = ''.join([HEX_MAP[char] for char in input])
-    _, val = _parse(binary)
-    return val
-
-
-def _parse(data):
-    data = data[3:]
-
-    tid = int(data[:3], 2)
-    data = data[3:]
-    if tid == 4:
-        t = ""
-        while True:
-            t += data[1:5]
-            cnt = data[0]
-            data = data[5:]
-            if cnt == '0':
-                break
-        return (data, int(t, 2))
-    else:
-        ltid = data[0]
-        data = data[1:]
-        spv = []
-        if ltid == '0':
-            l = data[:15]
-            data = data[15:]
-            subpacketslen = int(l, 2)
-            subpackets = data[:subpacketslen]
-            while subpackets:
-                s, x = _parse(subpackets)
-                subpackets = s
-                spv.append(x)
-            data = data[subpacketslen:]
-        else:
-            l = data[:11]
-            data = data[11:]
-            subpacketsqty = int(l, 2)
-            for i in range(subpacketsqty):
-                s, x = _parse(data)
-                data = s
-                spv.append(x)
-
-        new_val = _execute_op(tid, spv)
-        return data, new_val
-
-
-def _decode_binary(
-    binary: str,
-    values: list,
-    versions: list,
-) -> Tuple[List[int], List[int]]:
-    """Decode binary to get list of packet values and packet versions
+def _decode_binary(binary: str, versions: list) -> List[int]:
+    """Recursively decode binary to get list of packet versions
 
     Args:
         binary (str): a binary string
-        values (list): list of subpacket values
         versions (list): list of versions
     """
     if not binary or not int(binary, 2):
-        return values, versions
+        return versions
 
     binary_version = binary[:3]
     binary_type = binary[3:6]
@@ -107,10 +57,9 @@ def _decode_binary(
     new_versions = versions + [version_num]
 
     if operator_id == LITERAL:
-        val, new_binary = _decode_literal(binary)
+        _, new_binary = _decode_literal(binary)
 
-        new_values = values + [val]
-        return _decode_binary(new_binary, new_values, new_versions)
+        return _decode_binary(new_binary, new_versions)
     else:
         mode = int(binary[6])
         mode_length = MODE_LENGTHS[mode]
@@ -122,10 +71,7 @@ def _decode_binary(
 
         while count <= sub_packet_count:
             count += 1
-            return _decode_binary(new_binary, values, new_versions)
-            # vals, _ = _decode_binary(new_binary, values, new_versions)
-            # new_values = _execute_op(operator_id, vals)
-            # return [new_values], versions
+            return _decode_binary(new_binary, new_versions)
 
 
 def _decode_literal(binary: str) -> Tuple[int, str]:
@@ -151,6 +97,69 @@ def _decode_literal(binary: str) -> Tuple[int, str]:
 
     remaining_binary = binary[end:]
     return int(binary_num, 2), remaining_binary
+
+
+# # # # # #
+# PART 2  #
+# # # # # #
+
+
+def part_2() -> int:
+    """Return result of performing operation on values of subpackets."""
+    input = _load_input()
+    binary = ''.join([HEX_MAP[char] for char in input])
+    _, val = _parse(binary)
+    return val
+
+
+def _parse(binary: str):
+    """Decode binary to get value."""
+    binary = binary[3:]
+
+    type_id = int(binary[:3], 2)
+    binary = binary[3:]
+
+    if type_id == LITERAL:
+        bit = ""
+        while True:
+            bit += binary[1:5]
+            prefix = int(binary[0])
+            binary = binary[5:]
+            if not prefix:
+                break
+
+        val = int(bit, 2)
+        return (binary, val)
+    else:
+        mode = int(binary[0])
+        mode_len = MODE_LENGTHS[mode]
+        binary = binary[1:]
+        subpackets = []
+
+        if mode:
+            sub_length = binary[:mode_len]
+            binary = binary[11:]
+            subpacket_count = int(sub_length, 2)
+            for _ in range(subpacket_count):
+                new_binary, val = _parse(binary)
+                binary = new_binary
+                subpackets.append(val)
+        else:
+            sub_length = binary[:mode_len]
+            sub_length = int(sub_length, 2)
+
+            binary = binary[mode_len:]
+            sub_binary = binary[:sub_length]
+
+            while sub_binary:
+                new_binary, val = _parse(sub_binary)
+                sub_binary = new_binary
+                subpackets.append(val)
+
+            binary = binary[sub_length:]
+
+        new_val = _execute_op(type_id, subpackets)
+        return binary, new_val
 
 
 def _execute_op(type_id: int, values: List[int]):
@@ -181,6 +190,11 @@ def _execute_op(type_id: int, values: List[int]):
     if type_id == 7:
         is_equal = values[0] == values[1]
         return int(is_equal)
+
+
+# # # # # # # #
+# LOAD INPUT  #
+# # # # # # # #
 
 
 def _load_input() -> str:
