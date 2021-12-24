@@ -1,5 +1,6 @@
 """Main solution file: day 18."""
 
+from functools import reduce
 import json
 import os
 
@@ -9,18 +10,32 @@ INPUT_FILE = 'input.txt'
 def part_1():
     """Return the magnitude of the snailfish addition."""
     input = _load_input()
-    added_input = []
+    added_input = reduce(_add, input)
 
-    # add
-    for i in range(len(input)):
-        if i == 0:
-            added_input += input[i]
-            continue
-        prev = added_input.copy()
-        added_input = [prev, input[i]]
-
-    left_num, exploded, right_num = _explode(added_input)
+    # left_num, exploded, right_num = _explode(added_input)
     return added_input
+
+
+def _add(left, right):
+    """Add left and right lists together."""
+    new_num = [left, right]
+
+    # reduce
+    while True:
+        left_num, exploded, right_num = _explode(new_num)
+        if exploded:
+            new_num = exploded
+            continue
+
+        split = _split(new_num)
+        if split:
+            new_num = split
+            continue
+
+        if not exploded and not split:
+            break
+
+    return new_num
 
 
 def _is_num(val):
@@ -28,7 +43,7 @@ def _is_num(val):
     return isinstance(val, int)
 
 
-def _explode(input: list):
+def _explode(input):
     """Explode snailfish number."""
     depth = 0
     nested = input.copy()
@@ -43,22 +58,22 @@ def _explode(input: list):
         depth += 1
 
     exploded = []
+    left_num = None
+    right_num = None
 
     if not _is_num(nested):
         idx = prev_nest.index(nested)
-        left_num = [item for item in prev_nest[:idx] if _is_num(item)]
-        right_num = [item for item in prev_nest[idx:] if _is_num(item)]
+        left = [item for item in prev_nest[:idx] if _is_num(item)]
+        right = [item for item in prev_nest[idx:] if _is_num(item)]
 
-        if not left_num:
-            left_num = None
+        if not left:
             exploded.append(0)
         else:
             left_num = left_num[-1]
             new_num = left_num + nested[0]
             exploded.append(new_num)
 
-        if not right_num:
-            right_num = 0
+        if not right:
             exploded.append(0)
         else:
             right_num = right_num[0]
@@ -72,6 +87,9 @@ def _explode(input: list):
 
 def _split(num):
     """Split number into a new list."""
+    if not _is_num(num) or num < 10:
+        return []
+
     left_num = num // 2
     right_num = num // 2
 
