@@ -21,28 +21,24 @@ def part_1() -> int:
 def part_2() -> int:
     """Part 2: Find total calories of three elves carrying the most calories."""
     input = _load_data()
-    three_highest_totals = []
+    highest_totals = []
 
     for elf_rations in input:
         total = sum(elf_rations)
+        highest_totals.append(total)
 
-        if len(three_highest_totals) < 3:
-            three_highest_totals.append(total)
-            continue
+        if len(highest_totals) > 3:
+            highest_totals.remove(min(highest_totals))
 
-        all_totals = three_highest_totals + [total]
-        all_totals.remove(min(all_totals))
-        three_highest_totals = all_totals
-
-    return sum(three_highest_totals)
+    return sum(highest_totals)
 
 
 # # # # # # # #
 # LOAD INPUT  #
 # # # # # # # #
 
-def _load_data() -> List[int]:
-    """Load data from text file."""
+def _load_data() -> List[List[int]]:
+    """Load data from text file. Returns a list of lists of integers."""
     filepath = os.path.join(os.getcwd(), os.path.dirname(__file__), INPUT_FILE)
     f = open(filepath, 'r')
     data = f.read()
@@ -53,5 +49,5 @@ def _load_data() -> List[int]:
     return [[int(item) for item in elf] for elf in input]
 
 
-# print(part_1()) # 72070
-# print(part_2()) # 211805
+# print(part_1())  # 72070
+# print(part_2())  # 211805
