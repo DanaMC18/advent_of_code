@@ -1,14 +1,11 @@
 """Main solution file: day 02."""
 
 import os
+from functools import reduce
 from typing import List
 
 INPUT_FILE = 'input.txt'
-CONFIG = {
-    'red': 12,
-    'green': 13,
-    'blue': 14
-}
+COLOR_CONFIG = {'red': 12, 'green': 13, 'blue': 14}
 
 
 def part_one() -> int:
@@ -20,13 +17,35 @@ def part_one() -> int:
         is_valid = True
         for pull in pulls:
             for color in pull.keys():
-                if pull[color] > CONFIG[color]:
+                if pull[color] > COLOR_CONFIG[color]:
                     is_valid = False
         if is_valid:
             valid_game_ids.append(int(id))
 
     return sum(valid_game_ids)
 
+
+def part_two() -> int:
+    """Return the sum of the power of each set."""
+    games = _format_games()
+    power_of_sets = []
+
+    for pulls in games.values():
+        max_color_count = {'red': 1, 'green': 1, 'blue': 1}
+        for pull in pulls:
+            for color in pull.keys():
+                if pull[color] > max_color_count[color]:
+                    max_color_count[color] = pull[color]
+
+        product = reduce((lambda x, y: x * y), max_color_count.values())
+        power_of_sets.append(product)
+
+    return sum(power_of_sets)
+
+
+# # # # # # #
+#  HELPERS  #
+# # # # # # #
 
 def _format_games() -> dict:
     """Return a formatted dict of games."""
@@ -44,7 +63,7 @@ def _format_games() -> dict:
             color_dict = {}
 
             for pull in s.split(', '):
-                for color in CONFIG.keys():
+                for color in COLOR_CONFIG.keys():
                     if color in pull:
                         color_num = pull.replace(color, '').strip()
                         color_dict[color] = int(color_num)
@@ -55,10 +74,6 @@ def _format_games() -> dict:
 
     return games
 
-
-# # # # # # # #
-# LOAD INPUT  #
-# # # # # # # #
 
 def _load_data() -> List[str]:
     """Load data from text file. Returns a list strings."""
@@ -71,3 +86,4 @@ def _load_data() -> List[str]:
 
 
 # print(part_one())   # 2285
+# print(part_two())   # 77021
