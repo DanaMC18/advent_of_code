@@ -2,7 +2,7 @@
 
 import os
 from functools import reduce
-from typing import List
+from typing import Dict, List
 
 INPUT_FILE = 'input.txt'
 COLOR_CONFIG = {'red': 12, 'green': 13, 'blue': 14}
@@ -47,7 +47,7 @@ def part_two() -> int:
 #  HELPERS  #
 # # # # # # #
 
-def _format_games() -> dict:
+def _format_games() -> Dict[int, list]:
     """Return a formatted dict of games."""
     data = _load_data()
     games = {}
