@@ -22,28 +22,35 @@ def part_one() -> int:
     max_row = len(data) - 1
     valid_nums = []
 
-    for line in data:
-        row = data.index(line)
+    for row, line in enumerate(data):
         max_col = len(line) - 1
         number = ''
-        for char in line:
+        is_valid = False
+        for col, char in enumerate(line):
             if char.isnumeric():
                 number = number + char
-            elif number:
-                col = line.index(number)
-                pos = [row, col]
 
-                for d in DIRECTIONS.values():
-                    next_row = pos[0] + d[0] if pos[0] < max_row else pos[0]
-                    next_col = pos[1] + d[1] if pos[1] < max_col else pos[1]
-                    next_pos = data[next_row][next_col]
+                for dr in DIRECTIONS.values():
+                    next_row = row + dr[0]
+                    next_col = col + dr[1]
 
-                    if next_pos == '.' or next_pos.isnumeric():
+                    if next_row < 0 or next_row > max_row:
                         continue
-                    else:
-                        valid_nums.append(number)
+                    if next_col < 0 or next_col > max_col:
+                        continue
 
+                    next_char = data[next_row][next_col]
+
+                    if next_char != '.' and not next_char.isnumeric():
+                        is_valid = True
+            else:
+                if is_valid:
+                    valid_nums.append(number)
+                    is_valid = False
                 number = ''
+
+        if is_valid:
+            valid_nums.append(number)
 
     return sum([int(num) for num in valid_nums])
 
@@ -62,4 +69,4 @@ def _load_data() -> List[str]:
     return data.strip().split('\n')
 
 
-print(part_one())
+# print(part_one())   # 551094
