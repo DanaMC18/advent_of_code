@@ -25,6 +25,31 @@ def part_one() -> int:
     return sum(card_points)
 
 
+def part_two() -> int:
+    """Return the total number of scratchcards."""
+    data = _format_data()
+    card_counts = {}
+
+    for id, card in data.items():
+        # copies = card_counts.get(id, 1)
+        numbers, winners = card
+        count = 0
+        for num in numbers:
+            if num in winners:
+                count += 1
+
+        if count > 0:
+            card_counts[id] = card_counts.get(id, 0) + 1
+
+        while count > 0:
+            card_id = id + count
+            current_count = card_counts.get(card_id, 0)
+            card_counts[card_id] = current_count + 1
+            count -= 1
+
+    return card_counts
+
+
 # # # # # # # #
 # LOAD INPUT  #
 # # # # # # # #
@@ -57,4 +82,5 @@ def _load_data() -> List[str]:
     return data.strip().split('\n')
 
 
-print(part_one())   # 28750
+# print(part_one())   # 28750
+print(part_two())
