@@ -76,3 +76,5 @@ Once all of the originals and copies have been processed, you end up with:
 In total, this example pile of scratchcards causes you to ultimately have 30 scratchcards!
 
 Process all of the original and copied scratchcards until no more scratchcards are won. Including the original set of scratchcards, **how many total scratchcards do you end up with?**
+
+**Answer:** 10212704
