@@ -70,4 +70,4 @@ def _load_data() -> List[str]:
 
 
 # print(part_one()) # 1086
-print(part_two()) # 1086
+# print(part_two()) # 6268
