@@ -28,9 +28,9 @@ def part_one() -> int:
 
             count = 0
 
-            for d in DIRS:
-                new_row_idx = row_idx + DIRS[d][0]
-                new_col_idx = col_idx + DIRS[d][1]
+            for d in DIRS.values():
+                new_row_idx = row_idx + d[0]
+                new_col_idx = col_idx + d[1]
 
                 if 0 <= new_row_idx < len(data) and 0 <= new_col_idx < len(row):
                     if data[new_row_idx][new_col_idx] == '@':
@@ -72,9 +72,9 @@ def _part_two_helper(data: List[List[str]]) -> tuple[List[List[str]], int]:
 
             count = 0
 
-            for d in DIRS:
-                new_row_idx = row_idx + DIRS[d][0]
-                new_col_idx = col_idx + DIRS[d][1]
+            for d in DIRS.values():
+                new_row_idx = row_idx + d[0]
+                new_col_idx = col_idx + d[1]
 
                 if 0 <= new_row_idx < len(data) and 0 <= new_col_idx < len(row):
                     if data[new_row_idx][new_col_idx] == '@':
